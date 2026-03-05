@@ -1,0 +1,28 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"dbname": {
+					"value": "@dataset().dbval",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"dbval": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "apesh"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,54 @@
+{
+	"name": "Json4",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "input-13-02",
+				"fileSystem": "newcontainer"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"order_id": {
+					"type": "string"
+				},
+				"user_id": {
+					"type": "string"
+				},
+				"product": {
+					"type": "string"
+				},
+				"quantity": {
+					"type": "string"
+				},
+				"price": {
+					"type": "string"
+				},
+				"product_id": {
+					"type": "string"
+				},
+				"product_name": {
+					"type": "string"
+				},
+				"category": {
+					"type": "string"
+				},
+				"stock": {
+					"type": "integer"
+				},
+				"unit_price": {
+					"type": "number"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

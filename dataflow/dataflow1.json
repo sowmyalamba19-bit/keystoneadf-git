@@ -1,0 +1,209 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText7",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable5",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable5",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable5",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "exists1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "exists2"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          emp_id as short,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          email as string,",
+				"          phone_number as string,",
+				"          department as string,",
+				"          job_title as string,",
+				"          hire_date as string,",
+				"          salary as integer,",
+				"          age as short,",
+				"          city as string,",
+				"          country as string,",
+				"          is_active as boolean,",
+				"          performance_score as double,",
+				"          years_experience as short,",
+				"          manager_id as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          emp_id as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          city as string,",
+				"          hire_date as date,",
+				"          end_date as date,",
+				"          is_active as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source1 select(mapColumn(",
+				"          emp_id,",
+				"          first_name,",
+				"          last_name,",
+				"          email,",
+				"          phone_number,",
+				"          department,",
+				"          job_title,",
+				"          hire_date,",
+				"          salary,",
+				"          age,",
+				"          city,",
+				"          country,",
+				"          is_active,",
+				"          performance_score,",
+				"          years_experience,",
+				"          manager_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1, select2 exists(select1@emp_id == select2@emp_id && select1@first_name == select2@first_name && select1@city == select2@city,",
+				"     negate:true,",
+				"     broadcast: 'both')~> exists1",
+				"source2 filter(is_active == isBoolean('TRUE')) ~> filter1",
+				"filter1 select(mapColumn(",
+				"          emp_id,",
+				"          first_name,",
+				"          last_name,",
+				"          city,",
+				"          hire_date,",
+				"          end_date,",
+				"          is_active",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2, exists1 exists(select2@emp_id == select1@emp_id,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists2",
+				"exists1 derive(end_date = toDate('9999-12-31'),",
+				"          is_active = 'TRUE') ~> derivedColumn1",
+				"derivedColumn1 alterRow(upsertIf(1==1)) ~> alterRow1",
+				"exists2 derive(end_date = currentUTC(),",
+				"          is_active = 'FALSE') ~> derivedColumn2",
+				"derivedColumn2 alterRow(updateIf(1==1)) ~> alterRow2",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          emp_id as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          city as string,",
+				"          hire_date as date,",
+				"          end_date as date,",
+				"          is_active as boolean",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['emp_id','first_name','city'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          emp_id,",
+				"          first_name,",
+				"          last_name,",
+				"          city,",
+				"          hire_date,",
+				"          end_date,",
+				"          is_active",
+				"     )) ~> sink1",
+				"alterRow2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          emp_id as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          city as string,",
+				"          hire_date as date,",
+				"          end_date as date,",
+				"          is_active as boolean",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['emp_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          emp_id,",
+				"          first_name,",
+				"          last_name,",
+				"          city,",
+				"          hire_date,",
+				"          end_date,",
+				"          is_active",
+				"     )) ~> sink2"
+			]
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"name": "DemFac",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7f01781d-9ebb-4a84-a2a6-eab255825404",
+		"tenantId": "37a744dd-9422-493b-8f76-0b7638ffbedb"
+	}
+}
