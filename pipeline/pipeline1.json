@@ -57,6 +57,10 @@
 							"dbname": {
 								"value": "@pipeline().parameters.dbname",
 								"type": "Expression"
+							},
+							"tname": {
+								"value": "@pipeline().parameters.tname",
+								"type": "Expression"
 							}
 						}
 					}
@@ -65,6 +69,9 @@
 		],
 		"parameters": {
 			"dbname": {
+				"type": "string"
+			},
+			"tname": {
 				"type": "string"
 			}
 		},
